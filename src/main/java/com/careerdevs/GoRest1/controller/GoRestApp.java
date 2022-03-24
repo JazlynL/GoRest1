@@ -3,6 +3,10 @@ package com.careerdevs.GoRest1.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -31,13 +35,44 @@ public class GoRestApp {
                             @PathVariable("id") String userId ){
        try {
            String url = "https://gorest.co.in/public/v2/users/" + userId;
-          // Object response = env.getProperty("API_TOKEN");
            return restTemplate.getForObject(url, Object.class);
+
        }
        catch (Exception exception ){
            return "404:user not found dope "+ userId;
        }
 
 
+    }
+
+    //Creating a Delete Request
+
+    @DeleteMapping("/{id}")
+    public Object deleteHeader( RestTemplate restTemplate,
+                        @PathVariable("id") String id        ){
+     try {
+         String url = "https://gorest.co.in/public/v2/users/" + id;
+         String response = env.getProperty("API_TOKEN");
+// implementing HTTP headers annotation to create a new header.
+         HttpHeaders headers = new HttpHeaders();
+         //giving the key authorization
+         headers.setBearerAuth(response);
+         //this is our response entity
+         HttpEntity  request = new HttpEntity(headers);
+         //creating a response entity object
+
+         restTemplate.exchange(
+                 url,
+                 HttpMethod.DELETE,
+                 request,
+                 Object.class
+         );
+
+//         restTemplate.delete(url, Object.class);
+         return "Sucessfully deleted the user" + id;
+
+     }catch(Exception exception){
+         return " 404 : not valid input crocky " + id;
+     }
     }
 }
