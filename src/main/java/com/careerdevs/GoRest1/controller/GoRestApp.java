@@ -25,7 +25,9 @@ public class GoRestApp {
     }
 
 
-    //sendHeader API Access
+
+
+     //sendHeader API Access
 
     // url we will be using  https://gorest.co.in/public/v2/users/
 
@@ -35,7 +37,17 @@ public class GoRestApp {
                             @PathVariable("id") String userId ){
        try {
            String url = "https://gorest.co.in/public/v2/users/" + userId;
+           String apiToken = env.getProperty("API_TOKEN");
+
+
+
+           //adding a query param
+           url+="?access-token=" + apiToken;
+
+
+
            return restTemplate.getForObject(url, Object.class);
+
 
        }
        catch (Exception exception ){
@@ -45,6 +57,13 @@ public class GoRestApp {
 
     }
 
+
+
+
+
+
+
+
     //Creating a Delete Request
 
     @DeleteMapping("/{id}")
@@ -52,23 +71,28 @@ public class GoRestApp {
                         @PathVariable("id") String id        ){
      try {
          String url = "https://gorest.co.in/public/v2/users/" + id;
-         String response = env.getProperty("API_TOKEN");
-// implementing HTTP headers annotation to create a new header.
-         HttpHeaders headers = new HttpHeaders();
-         //giving the key authorization
-         headers.setBearerAuth(response);
-         //this is our response entity
-         HttpEntity  request = new HttpEntity(headers);
-         //creating a response entity object
-// using the original template then we will refactor.
-         restTemplate.exchange(
-                 url,
-                 HttpMethod.DELETE,
-                 request,
-                 Object.class
-         );
+         String apiKey = env.getProperty("API_TOKEN");
 
-//         restTemplate.delete(url, Object.class);
+
+         //manual approach.....
+//         String response = env.getProperty("API_TOKEN");
+//// implementing HTTP headers annotation to create a new header.
+//         HttpHeaders headers = new HttpHeaders();
+//         //giving the key authorization
+//         headers.setBearerAuth(response);
+//         //this is our response entity
+//         HttpEntity  request = new HttpEntity(headers);
+//         //creating a response entity object
+//// using the original template then we will refactor.
+//         restTemplate.exchange(
+//                 url,
+//                 HttpMethod.DELETE,
+//                 request,
+//                 Object.class
+//         );
+
+
+         restTemplate.delete(url, Object.class);
          return "Sucessfully deleted the user" + id;
 
      }catch(Exception exception){
