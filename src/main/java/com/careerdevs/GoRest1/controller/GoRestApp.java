@@ -60,7 +60,7 @@ public class GoRestApp {
          //this is our response entity
          HttpEntity  request = new HttpEntity(headers);
          //creating a response entity object
-
+// using the original template then we will refactor.
          restTemplate.exchange(
                  url,
                  HttpMethod.DELETE,
