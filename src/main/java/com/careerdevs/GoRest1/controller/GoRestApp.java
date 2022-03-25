@@ -91,9 +91,10 @@ public class GoRestApp {
 //                 Object.class
 //         );
 
-
+         url += "?access-token=" + apiKey;
          restTemplate.delete(url, Object.class);
-         return "Sucessfully deleted the user" + id;
+
+         return "Sucessfully deleted the user  " + id;
 
      }catch(Exception exception){
          return " 404 : not valid input crocky " + id;
