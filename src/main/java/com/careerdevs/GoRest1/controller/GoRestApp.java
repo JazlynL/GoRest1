@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
@@ -96,7 +97,14 @@ public class GoRestApp {
 
          return "Sucessfully deleted the user  " + id;
 
-     }catch(Exception exception){
+     }catch(HttpClientErrorException.NotFound exception){
+         return "user was not found in system id # "+ id;
+     }
+     // creating a catch exception for a 401 client error.
+      catch(HttpClientErrorException.Unauthorized exception){
+         return " you are no authorized to delete this id # " +id;
+      }
+     catch(Exception exception){
          return " 404 : not valid input crocky " + id;
      }
     }
