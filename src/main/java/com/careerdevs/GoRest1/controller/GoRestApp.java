@@ -1,12 +1,8 @@
 package com.careerdevs.GoRest1.controller;
 
+import com.careerdevs.GoRest1.models.UserModelExample;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -32,6 +28,8 @@ public class GoRestApp {
 
     // url we will be using  https://gorest.co.in/public/v2/users/
 
+
+
     @GetMapping("/{id}")
     public Object getHeader(RestTemplate restTemplate,
                             //Sending a request using a singular piece of data
@@ -47,16 +45,29 @@ public class GoRestApp {
 
 
 
-           return restTemplate.getForObject(url, Object.class);
+           var user=  restTemplate.getForObject(url, UserModelExample.class);
+           assert user != null;
+           System.out.println( "report : \n" + user.generateReport());
 
+           return user;
 
        }
-       catch (Exception exception ){
-           return "404:user not found dope "+ userId;
+       catch(HttpClientErrorException.NotFound exception){
+           return "user was not found in system id # "+ userId;
        }
-
-
+       // creating a catch exception for a 401 client error.
+       catch(HttpClientErrorException.Unauthorized exception){
+           return " you are no authorized to delete this id # " + userId;
+       }
+       catch(Exception exception){
+           System.out.println(exception.getClass());
+           return exception.getMessage();
+       }
     }
+
+
+
+
 
 
 
@@ -107,5 +118,34 @@ public class GoRestApp {
      catch(Exception exception){
          return " 404 : not valid input crocky " + id;
      }
+    }
+
+
+
+    //posting the data.get user data from the client side.
+    @PostMapping("/{id}")
+    public Object postUser(RestTemplate restTemplate,
+                           @RequestParam("name") String name,
+                           @RequestParam("email") String email,
+                           @RequestParam("gender") String gender,
+                           @RequestParam("status") String status
+    ){
+        try{
+         String url ="https://gorest.co.in/public/v2/users/";
+         String token = env.getProperty("API_TOKEN");
+            url +=  "?access-token= " + token;
+
+          // we are able to create a new user by accessing th fields and implementing it within our postuser Method.
+            //
+            UserModelExample user = new UserModelExample(name,email,gender,status);
+
+         return restTemplate.getForObject(url, Object.class);
+
+
+        }catch(Exception e){
+            System.out.println(e.getClass());
+            return e.getMessage();
+
+        }
     }
 }
