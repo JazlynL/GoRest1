@@ -16,6 +16,7 @@ public class UserModelExample {
     private String status;
 
 
+
     //Do Not Delete Or Change.
     public UserModelExample(){
 
@@ -48,6 +49,7 @@ public class UserModelExample {
     public String getEmail() {
         return email;
     }
+
 
     public String generateReport(){
         return name + " They are currently  " + status + " you are able to contact them at: " + email;
