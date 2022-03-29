@@ -44,7 +44,8 @@ public class UserModelExample {
     public String getStatus() {
         return status;
     }
-    public String email(){
+
+    public String getEmail() {
         return email;
     }
 
@@ -52,13 +53,12 @@ public class UserModelExample {
         return name + " They are currently  " + status + " you are able to contact them at: " + email;
     }
 
-
-
     @Override
     public String toString() {
         return "UserModelExample{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
                 ", gender='" + gender + '\'' +
                 ", status='" + status + '\'' +
                 '}';

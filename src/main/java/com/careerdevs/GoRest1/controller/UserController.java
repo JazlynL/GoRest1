@@ -3,6 +3,9 @@ package com.careerdevs.GoRest1.controller;
 import com.careerdevs.GoRest1.models.UserModelExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -10,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 // we are requesting the route that we will be using to request data
 @RequestMapping("/api/users")
-public class GoRestApp {
+public class UserController {
     // to access data within the application properties/API Token
     @Autowired
     Environment env;
@@ -123,29 +126,48 @@ public class GoRestApp {
 
 
     //posting the data.get user data from the client side.
-    @PostMapping("/{id}")
-    public Object postUser(RestTemplate restTemplate,
-                           @RequestParam("name") String name,
-                           @RequestParam("email") String email,
-                           @RequestParam("gender") String gender,
-                           @RequestParam("status") String status
+    @PostMapping("/qp")
+    public ResponseEntity postUser(RestTemplate restTemplate,
+                                   @RequestParam("name") String name,
+                                   @RequestParam("email") String email,
+                                   @RequestParam("gender") String gender,
+                                   @RequestParam("status") String status
     ){
         try{
-         String url ="https://gorest.co.in/public/v2/users/";
-         String token = env.getProperty("API_TOKEN");
-            url +=  "?access-token= " + token;
 
-          // we are able to create a new user by accessing th fields and implementing it within our postuser Method.
-            //
+            String url ="https://gorest.co.in/public/v2/users/";
+            String token = env.getProperty("API_TOKEN");
+            url += "?access-token="+ token;
+
+            // we are able to create a new user by accessing th fields and implementing it within our postuser Method.
             UserModelExample user = new UserModelExample(name,email,gender,status);
+//
+//            HttpHeaders headers = new HttpHeaders();
+//                headers.setBearerAuth(token);
 
-         return restTemplate.getForObject(url, Object.class);
+            // printing out message in console;
+            System.out.println("Created new user \n"+ user);
+
+            HttpEntity<UserModelExample> request = new HttpEntity<>(user);
 
 
-        }catch(Exception e){
+//            restTemplate.postForObject(url,request, UserModelExample.class);
+//            url +=  "?access-token= " + token;
+
+            return  restTemplate.postForEntity( url ,request, UserModelExample.class);
+
+
+//          restTemplate.getForObject(url,request, UserModelExample.class);
+
+        } catch(HttpClientErrorException.NotFound exception){
+            //resource not found  error will output a 404 HTTP status code response
+            return  new ResponseEntity("user was not found in system ", HttpStatus.NOT_FOUND);
+
+        } catch(Exception e){
             System.out.println(e.getClass());
-            return e.getMessage();
-
+           // unspecified server error will output a 500 HTTP status code response
+            return new ResponseEntity(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
     }
 }
