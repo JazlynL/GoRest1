@@ -154,7 +154,7 @@ public class UserController {
 //            return restTemplate.postForEntity(url, request, UserModelExample.class);
 
 
-//          restTemplate.getForObject(url,request, UserModelExample.class);
+//         restTemplate.getForObject(url,request, UserModelExample.class);
 
         } catch (HttpClientErrorException.NotFound exception) {
             //resource not found  error will output a 404 HTTP status code response
@@ -168,6 +168,42 @@ public class UserController {
     }
 
 
+    //updating user info using putMapping.
+
+    @PutMapping
+    public ResponseEntity<Object> updatingUser(RestTemplate restTemplate,
+                                               @RequestBody UserModelExample userUpdate) {
+        try {
+            String url = "https://gorest.co.in/public/v2/users/";
+            String token = env.getProperty("API_TOKEN");
+            url += "?access-token=" + token;
+
+            System.out.println(url);
+            System.out.println(userUpdate);
+
+            // using http entity to complete the request through the request body.
+            HttpEntity<UserModelExample> request = new HttpEntity<>(userUpdate);
+
+            // creating the response for the user
+
+            ResponseEntity<UserModelExample> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.PUT,
+                    request,
+                    UserModelExample.class
+            );
+            return new ResponseEntity<>(response.getBody(), HttpStatus.CREATED);
+
+        }catch (HttpClientErrorException.NotFound exception) {
+            //resource not found  error will output a 404 HTTP status code response
+            return new ResponseEntity("user was not found in system ", HttpStatus.NOT_FOUND);}
+        catch(Exception e){
+            System.out.println(e.getClass());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+
+    }
 
 
 }
