@@ -1,5 +1,6 @@
 package com.careerdevs.GoRest1.controller;
 
+import com.careerdevs.GoRest1.models.UserModelArray;
 import com.careerdevs.GoRest1.models.UserModelExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -108,7 +109,7 @@ public class UserController {
 
 
     //posting the data.get user data from the client side.using request body.
-    @PostMapping("/qp")
+    @PostMapping
     public ResponseEntity<Object> postUser(RestTemplate restTemplate,
                                            @RequestBody UserModelExample postUser
     ) {
@@ -174,7 +175,7 @@ public class UserController {
     public ResponseEntity<Object> updatingUser(RestTemplate restTemplate,
                                                @RequestBody UserModelExample userUpdate) {
         try {
-            String url = "https://gorest.co.in/public/v2/users/";
+            String url = "https://gorest.co.in/public/v2/users/"+ userUpdate.getId();
             String token = env.getProperty("API_TOKEN");
             url += "?access-token=" + token;
 
@@ -205,5 +206,23 @@ public class UserController {
 
     }
 
+
+
+    // getting all the pages for user
+
+    //url / endpoint GET  http://localhost:4000/api/user/firstpage
+
+
+    @GetMapping("/firstpage")
+   public Object getFirstPage(RestTemplate restTemplate){
+        try{
+            String url = "https://gorest.co.in/public/v2/users/";
+            ResponseEntity<UserModelExample[]> firstPage = restTemplate.getForEntity(url,UserModelExample[].class);
+            return firstPage;
+        }catch(Exception e){
+            System.out.println(e.getClass());
+            return e.getMessage();
+        }
+    }
 
 }
