@@ -212,10 +212,11 @@ public class UserController {
     //url / endpoint GET  http://localhost:4000/api/user/firstpage
 
 
-    @GetMapping("/firstpage")
-   public Object getFirstPage(RestTemplate restTemplate){
+    @GetMapping("/page/{pageNum}")
+   public Object getFirstPage(RestTemplate restTemplate,
+                              @PathVariable("pageNum") String pageNumber){
         try{
-            String url = "https://gorest.co.in/public/v2/users/";
+            String url = "https://gorest.co.in/public/v2/users?page="+ pageNumber;
             ResponseEntity<UserModelExample[]> firstPage = restTemplate.getForEntity(url,UserModelExample[].class);
 
 
