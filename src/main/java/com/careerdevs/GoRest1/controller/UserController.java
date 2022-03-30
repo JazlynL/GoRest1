@@ -4,13 +4,12 @@ import com.careerdevs.GoRest1.models.UserModelArray;
 import com.careerdevs.GoRest1.models.UserModelExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Objects;
 
 @RestController
 // we are requesting the route that we will be using to request data
@@ -218,7 +217,31 @@ public class UserController {
         try{
             String url = "https://gorest.co.in/public/v2/users/";
             ResponseEntity<UserModelExample[]> firstPage = restTemplate.getForEntity(url,UserModelExample[].class);
-            return firstPage;
+
+
+            // instantiating first page to a variable.
+            UserModelExample[] firstPageOfUsers = firstPage.getBody();
+
+
+            // using this so we are able to use HTTP methods
+            HttpHeaders responseHeaders = firstPage.getHeaders();
+
+
+             /* using a for loop to iterate through the data.
+           for( int i = 0 ; i <firstPageOfUsers.length;i++){
+                 UserModelExample tempUser = firstPageOfUsers[i];
+                System.out.println(tempUser.generateReport());
+            }*/
+
+            //assigning the object key header
+            String totalPages = Objects.requireNonNull( responseHeaders.get("X-Pagination-Pages").get(0));
+           // outputting totalpages in the terminal
+
+            System.out.println("Total pages: "+ totalPages);
+
+            return new ResponseEntity<>(firstPageOfUsers,HttpStatus.OK);
+
+
         }catch(Exception e){
             System.out.println(e.getClass());
             return e.getMessage();
